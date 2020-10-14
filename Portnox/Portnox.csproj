@@ -33,8 +33,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,11 +52,62 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataLayer\IScanner.cs" />
+    <Compile Include="DataLayer\ScannerService.cs" />
+    <Compile Include="Interfaces\IDevice.cs" />
+    <Compile Include="Interfaces\IEvent.cs" />
+    <Compile Include="Interfaces\ISwitchPort.cs" />
+    <Compile Include="Interfaces\ISwitch.cs" />
+    <Compile Include="Models\Device.cs" />
+    <Compile Include="Models\Event.cs" />
+    <Compile Include="Models\NetworkEvent.cs">
+      <DependentUpon>Portnox.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SwitchPort.cs" />
+    <Compile Include="Models\Portnox.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Portnox.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Portnox.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Portnox.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Portnox.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Portnox.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Switch.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EntityDeploy Include="Models\Portnox.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Portnox.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Models\Portnox.edmx.diagram">
+      <DependentUpon>Portnox.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\Portnox.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Portnox.edmx</DependentUpon>
+      <LastGenOutput>Portnox.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\Portnox.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Portnox.edmx</DependentUpon>
+      <LastGenOutput>Portnox.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

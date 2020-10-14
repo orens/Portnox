@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.960
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portnox", "Portnox\Portnox.csproj", "{00D1130C-F61B-4BAB-91BC-031CB912A8FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portnox.Tests", "Portnox.Tests\Portnox.Tests.csproj", "{900DA3EA-E8EF-4077-A7D8-BC9187840D01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{00D1130C-F61B-4BAB-91BC-031CB912A8FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00D1130C-F61B-4BAB-91BC-031CB912A8FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00D1130C-F61B-4BAB-91BC-031CB912A8FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{900DA3EA-E8EF-4077-A7D8-BC9187840D01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{900DA3EA-E8EF-4077-A7D8-BC9187840D01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{900DA3EA-E8EF-4077-A7D8-BC9187840D01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{900DA3EA-E8EF-4077-A7D8-BC9187840D01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
