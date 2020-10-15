@@ -11,9 +11,10 @@ namespace Portnox.Models
     {
         public Device(string device_mac)
         {
-            Device_MAC = device_mac;    
+            Device_MAC = device_mac;
+            Events = new List<IEvent>();
         }
         public string Device_MAC { get; set; }
-        public IEnumerable<IEvent> Events { get; set; }
+        public IList<IEvent> Events { get; set; }
     }
 }

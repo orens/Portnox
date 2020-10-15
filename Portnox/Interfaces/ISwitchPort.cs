@@ -10,7 +10,7 @@ namespace Portnox.Interfaces
     public interface ISwitchPort
     {
         Byte Port_Id { get; set; }
-        IEnumerable<IDevice> Devices { get; set; }
-        IEnumerable<IEvent> Events { get; set; }
+        IDictionary<string,IDevice> Devices { get; set; }
+        IList<IEvent> Events { get; set; }
     }
 }

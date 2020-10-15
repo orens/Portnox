@@ -13,9 +13,11 @@ namespace Portnox.Models
         {
             Switch_Ip = switch_Ip;
             Port_Id = port_Id;
+            Events = new List<IEvent>();
+            Devices = new Dictionary<string, IDevice>();
         }
-        public IEnumerable<IDevice> Devices { get; set; }
-        public IEnumerable<IEvent> Events { get; set; }
+        public IDictionary<string,IDevice> Devices { get; set; }
+        public IList<IEvent> Events { get; set; }
         public byte Port_Id { get; set; }
         public string Switch_Ip { get; set; }
     }

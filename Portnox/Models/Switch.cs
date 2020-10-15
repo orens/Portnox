@@ -12,9 +12,11 @@ namespace Portnox.Models
         public Switch(string switch_Ip)
         {
             Switch_Ip = switch_Ip;
+            Events = new List<IEvent>();
+            Ports = new List<ISwitchPort>();
         }
         public string Switch_Ip { get; set; }
-        public IEnumerable<ISwitchPort> Ports { get; set; }
-        public IEnumerable<IEvent> Events { get; set; }
+        public IList<ISwitchPort> Ports { get; set; }
+        public IList<IEvent> Events { get; set; }
     }
 }

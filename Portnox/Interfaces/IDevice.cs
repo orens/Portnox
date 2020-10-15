@@ -9,6 +9,6 @@ namespace Portnox.Interfaces
     public interface IDevice
     {
         string Device_MAC { get; set; }
-        IEnumerable<IEvent> Events { get; set; }
+        IList<IEvent> Events { get; set; }
     }
 }
