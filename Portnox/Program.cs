@@ -12,7 +12,7 @@ namespace Portnox
         static void Main(string[] args)
         {
             var scanner = new ScannerService();
-            var result = scanner.GetSwitches();
+            var result = scanner.GetAllSwitches();
         }
     }
 }
