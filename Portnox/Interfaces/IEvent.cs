@@ -9,5 +9,8 @@ namespace Portnox.Interfaces
     public interface IEvent
     {
         int Event_Id { get; set; }
+        string Switch_Ip { get; set; }
+        byte SPort { get; set; }
+        string Device_MAC { get; set; }
     }
 }

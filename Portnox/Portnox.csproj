@@ -52,7 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataLayer\IScanner.cs" />
     <Compile Include="DataLayer\ScannerService.cs" />
     <Compile Include="Interfaces\IDevice.cs" />
     <Compile Include="Interfaces\IEvent.cs" />

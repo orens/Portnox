@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Portnox.DataLayer
 {
-    public class ScannerService : IScanner
+    public class ScannerService
     {
         private PortnoxEntities db;
         public ScannerService()
@@ -23,108 +23,90 @@ namespace Portnox.DataLayer
         }
 
         Dictionary<string, ISwitch> Switches = new Dictionary<string, ISwitch>();
-        Dictionary<string, ISwitchPort> SwitchPorts = new Dictionary<string, ISwitchPort>();
+        Dictionary<KeyValuePair<string, byte>, ISwitchPort> SwitchPorts = new Dictionary<KeyValuePair<string, byte>, ISwitchPort>();
         Dictionary<string, IDevice> Devices = new Dictionary<string, IDevice>();
+        List<IEvent> Events = new List<IEvent>();
 
-        private IEnumerable<string> Switches1 => db.NetworkEvents.Select(s => s.Switch_Ip).Distinct();
     
-        public async Task<IEnumerable<ISwitch>> GetSwitches()
+        public IEnumerable<ISwitch> GetSwitches()
         {
-            try
-            {
-                Init();
-                var switches = new List<ISwitch>();
-                foreach (var currSwitchIp in Switches)
-                {
-                    var currSwitch = new Switch { Switch_Ip = currSwitchIp };
-                    await PopulateSwitchAsync(currSwitch);
-                    switches.Add(currSwitch);
-                }
-                return switches;
-            }
-            finally
-            {
-                db.Dispose();
-            }
+            Init();
+            Populate();
+            return Switches.Values;
         }
 
         private void Init()
         {
-            foreach (var item in db.NetworkEvents)
+            foreach (var networkEvent in db.NetworkEvents)
             {
-                var event1 = new Event();
-                event1.Event_Id = item.Event_Id;
-                var device = GetDevice(item, event1);
-                if (Sw)
-                {
-
-                }
+                GetSwitch(networkEvent.Switch_Ip, new Switch(networkEvent.Switch_Ip));
+                GetSwitchPort(networkEvent, new SwitchPort(networkEvent.Switch_Ip, networkEvent.Port_Id));
+                GetDevice(networkEvent.Device_MAC);
+                Events.Add(new Event(networkEvent.Switch_Ip, networkEvent.Port_Id,networkEvent.Device_MAC, networkEvent.Event_Id));
             }
         }
 
-        private IDevice GetDevice(NetworkEvent item, IEvent event1)
+        private void Populate()
         {
-            if (!Devices.ContainsKey(item.Device_MAC))
+            PopulateSwitches();
+            PopulateSwitchPorts();
+            PopulateDevices();
+        }
+
+        private IDevice GetDevice(string device_MAC)
+        {
+            if (device_MAC == null)
             {
-                Devices.Add(item.Device_MAC, new Device(item.Device_MAC));
+                return null;
             }
-            return Devices[item.Device_MAC];
-        }
-
-        private async Task PopulateSwitchAsync(ISwitch currSwitch)
-        {
-            currSwitch.Ports = await GetPortsAsync(currSwitch);
-            currSwitch.Events = await GetEventsAsync(currSwitch);
-        }
-        public async Task<IEnumerable<ISwitchPort>> GetPortsAsync(ISwitch currSwitch)
-        {
-
-            var ports = await db.NetworkEvents.Where(s => s.Switch_Ip == currSwitch.Switch_Ip).Select(s =>
-            new SwitchPort
+            if (!Devices.ContainsKey(device_MAC))
             {
-                Port_Id = s.Port_Id,
-            }).Distinct().ToListAsync();
-
-            foreach (var port in ports)
-            {
-                port.Devices = await GetDevicesAsync(currSwitch, port.Port_Id);
-                port.Events = await GetPortEventsAsync(currSwitch, port.Port_Id);
+                Devices.Add(device_MAC, new Device(device_MAC));
             }
-            return ports;
+            return Devices[device_MAC];
         }
 
-        public async Task<IEnumerable<IEvent>> GetEventsAsync(ISwitch currSwitch)
+        private ISwitchPort GetSwitchPort(NetworkEvent networkEvent, ISwitchPort switchPort = null)
         {
-            return await db.NetworkEvents.Where(s => s.Switch_Ip == currSwitch.Switch_Ip)
-                .Select(s => new Event
-                {
-                    Event_Id = s.Event_Id
-                }).ToListAsync();
-        }
-
-        public async Task<IEnumerable<IDevice>> GetDevicesAsync(ISwitch currSwitch, byte port_Id)
-        {
-           var devices =  await db.NetworkEvents.Where(s => s.Switch_Ip == currSwitch.Switch_Ip && s.Port_Id == port_Id).Select(s =>
-           new Device
-           {
-               Device_MAC = s.Device_MAC,
-           }).Distinct().ToListAsync();
-
-            foreach (var device in devices)
+            if (!SwitchPorts.ContainsKey(new KeyValuePair<string, byte>(networkEvent.Switch_Ip, networkEvent.Port_Id )))
             {
-                device.Events = await GetPortEventsAsync(currSwitch, port_Id, device.Device_MAC);
+                SwitchPorts.Add(new KeyValuePair<string, byte>(networkEvent.Switch_Ip, networkEvent.Port_Id), switchPort);
             }
-            return devices;
+            return SwitchPorts[new KeyValuePair<string, byte>(networkEvent.Switch_Ip, networkEvent.Port_Id)];
         }
 
-        public async Task<IEnumerable<IEvent>> GetPortEventsAsync(ISwitch currSwitch, byte port_Id, string device_MAC = null)
+        private ISwitch GetSwitch(string switch_Ip, ISwitch @switch = null)
         {
-            var query = db.NetworkEvents.Where(s => s.Switch_Ip == currSwitch.Switch_Ip && s.Port_Id == port_Id);
-            if (device_MAC != null)
+            if (!Switches.ContainsKey(switch_Ip))
             {
-                query = query.Where(s => s.Device_MAC == device_MAC);
+                Switches.Add(switch_Ip, @switch);
             }
-            return await query.Select(s => new Event{Event_Id = s.Event_Id}).ToListAsync();
+            return Switches[switch_Ip];
+        }
+
+        private void PopulateSwitches()
+        {
+            foreach (var @switch in Switches)
+            {
+                @switch.Value.Ports = SwitchPorts.Where(w => w.Key.Key == @switch.Value.Switch_Ip).Select(s => s.Value);
+                @switch.Value.Events = Events.Where(w => w.Switch_Ip == @switch.Value.Switch_Ip);
+            }
+        }
+
+        private void PopulateSwitchPorts()
+        {
+            foreach (var sp in SwitchPorts)
+            {
+                sp.Value.Events = Events.Where(w => w.SPort == sp.Value.Port_Id);
+            }
+        }
+
+        private void PopulateDevices()
+        {
+            foreach (var device in Devices)
+            {
+                device.Value.Events = Events.Where(w => w.Device_MAC == device.Value.Device_MAC);
+            }
         }
     }
 }
